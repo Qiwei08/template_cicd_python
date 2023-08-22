@@ -103,8 +103,8 @@ Type: `object`
   - Example: `"1"`
 - **_project_id_** `required`
   - _ID of the Saagie project_
-  - Type: `string`
-  - Example: `"1"`
+  - Type: `UUID`
+  - Example: `"5d714745-1fea-4b30-ab5c-a9965a028355"`
 - **_project_name_** `required`
   - _Name of the Saagie project_
   - Type: `string`
@@ -169,6 +169,8 @@ Type: `object`
 
 
 #### Pipeline
+
+Each file inside `/saagie/pipelines` has following schema, it can be json or yaml:
 
 _A pipeline inside Saagie_
 
