@@ -4,6 +4,7 @@ from saagieapi import SaagieApi, GraphPipeline, ConditionNode, JobNode, Conditio
 import json
 import shutil
 import os
+import yaml
 
 
 def package_code(name_file, root_dir, archive_format="zip"):
@@ -97,8 +98,17 @@ def create_graph(pipeline_config_file, env):
     :param env: str, environment of Saagie that you want upgrade pipeline
     :return: saagieapi.GraphPipeline
     """
-    with open(pipeline_config_file, "r") as f:
-        pipeline_config = json.load(f)
+    _, file_extension = os.path.splitext(pipeline_config_file)
+    if file_extension == ".json":
+        with open(pipeline_config_file, "r") as f:
+            pipeline_config = json.load(f)
+    elif file_extension == ".yaml":
+        with open(pipeline_config_file, "r") as f:
+            pipeline_config = yaml.safe_load(f)
+            print(pipeline_config)
+    else:
+        raise Exception("Pipeline config file must be a json or yaml file")
+
     pipeline_info = pipeline_config["env"][env]["graph_pipeline"]
     graph_pipeline = GraphPipeline()
     list_job_nodes = []
@@ -146,8 +156,16 @@ def create_or_upgrade_graph_pipeline(client_saagie, pipeline_config_file, env):
     :param env: str, environment of Saagie that you want upgrade pipeline
     :return: dict of pipeline information
     """
-    with open(pipeline_config_file, "r") as f:
-        pipeline_config = json.load(f)
+    _, file_extension = os.path.splitext(pipeline_config_file)
+    if file_extension == ".json":
+        with open(pipeline_config_file, "r") as f:
+            pipeline_config = json.load(f)
+    elif file_extension == ".yaml":
+        with open(pipeline_config_file, "r") as f:
+            pipeline_config = yaml.safe_load(f)
+            print(pipeline_config)
+    else:
+        raise Exception("Pipeline config file must be json or yaml file")
     with open(f"./saagie/envs/{env}.json", "r") as f:
         env_config = json.load(f)
 
@@ -176,8 +194,16 @@ def run_pipeline(client_saagie, pipeline_config_file, env):
     :param env: str, environment of Saagie that you want to create or upgrade job
     :return: dict, dict of job instance ID and status
     """
-    with open(pipeline_config_file, "r") as f:
-        pipeline_config = json.load(f)
+    _, file_extension = os.path.splitext(pipeline_config_file)
+    if file_extension == ".json":
+        with open(pipeline_config_file, "r") as f:
+            pipeline_config = json.load(f)
+    elif file_extension == ".yaml":
+        with open(pipeline_config_file, "r") as f:
+            pipeline_config = yaml.safe_load(f)
+            print(pipeline_config)
+    else:
+        raise Exception("Pipeline config file must be json or yaml file")
     with open(f"./saagie/envs/{env}.json", "r") as f:
         env_config = json.load(f)
     pipeline_id = client_saagie.pipelines.get_id(project_name=env_config["project_name"], pipeline_name=pipeline_config["pipeline_name"])

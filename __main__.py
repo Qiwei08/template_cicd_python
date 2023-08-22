@@ -1,6 +1,8 @@
 import argparse
 import logging
 import json
+import os
+
 import utils
 
 
@@ -66,18 +68,35 @@ def main():
                                                 args.saagie_user,
                                                 args.saagie_pwd,
                                                 args.saagie_realm)
-        utils.create_or_upgrade_graph_pipeline(client_saagie,
-                                               f"saagie/pipelines/{args.pipeline_name}.json",
-                                               args.saagie_env)
+        pipeline_path_prefix = f"saagie/pipelines/{args.pipeline_name}"
+        if os.path.exists(f"{pipeline_path_prefix}.json"):
+            utils.create_or_upgrade_graph_pipeline(client_saagie,
+                                                   f"saagie/pipelines/{args.pipeline_name}.json",
+                                                   args.saagie_env)
+        elif os.path.exists(f"{pipeline_path_prefix }.yaml"):
+            utils.create_or_upgrade_graph_pipeline(client_saagie,
+                                                   f"saagie/pipelines/{args.pipeline_name}.yaml",
+                                                   args.saagie_env)
+        else:
+            logging.info(f"There is no corresponding pipeline file for the pipeline: [{args.pipeline_name}]")
+
     if args.action == "run_pipeline":
         client_saagie = utils.connect_to_saagie(args.saagie_url,
                                                 env_config["platform_id"],
                                                 args.saagie_user,
                                                 args.saagie_pwd,
                                                 args.saagie_realm)
-        utils.run_pipeline(client_saagie,
-                           f"saagie/pipelines/{args.pipeline_name}.json",
-                           args.saagie_env)
+        pipeline_path_prefix = f"saagie/pipelines/{args.pipeline_name}"
+        if os.path.exists(f"{pipeline_path_prefix}.json"):
+            utils.run_pipeline(client_saagie,
+                               f"saagie/pipelines/{args.pipeline_name}.json",
+                               args.saagie_env)
+        elif os.path.exists(f"{pipeline_path_prefix }.yaml"):
+            utils.run_pipeline(client_saagie,
+                               f"saagie/pipelines/{args.pipeline_name}.yaml",
+                               args.saagie_env)
+        else:
+            logging.info(f"There is no corresponding pipeline file for the pipeline: [{args.pipeline_name}]")
 
     logging.info("DONE")
 

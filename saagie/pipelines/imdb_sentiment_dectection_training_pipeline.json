@@ -163,6 +163,5 @@
         }
     },
     "has_execution_variables_enabled": null,
-    "description": "Change description",
-    "release_note": "new release using github action"
+    "description": "Change description"
 }

@@ -34,6 +34,7 @@ jobs:
               - saagie/jobs/*.json
             pipelines:
               - saagie/pipelines/*.json
+              - saagie/pipelines/*.yaml
 
       - name: Run step if any of the jobs files above change
         if: steps.changed-files-specific.outputs.jobs_any_changed == 'true'
