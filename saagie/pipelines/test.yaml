@@ -1,4 +1,4 @@
-pipeline_name: Test pipeline with yaml
+pipeline_name: Test pipeline with yaml file
 env:
   dev:
     graph_pipeline:
