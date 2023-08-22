@@ -105,7 +105,6 @@ def create_graph(pipeline_config_file, env):
     elif file_extension == ".yaml":
         with open(pipeline_config_file, "r") as f:
             pipeline_config = yaml.safe_load(f)
-            print(pipeline_config)
     else:
         raise Exception("Pipeline config file must be a json or yaml file")
 
@@ -163,7 +162,6 @@ def create_or_upgrade_graph_pipeline(client_saagie, pipeline_config_file, env):
     elif file_extension == ".yaml":
         with open(pipeline_config_file, "r") as f:
             pipeline_config = yaml.safe_load(f)
-            print(pipeline_config)
     else:
         raise Exception("Pipeline config file must be json or yaml file")
     with open(f"./saagie/envs/{env}.json", "r") as f:
@@ -201,7 +199,6 @@ def run_pipeline(client_saagie, pipeline_config_file, env):
     elif file_extension == ".yaml":
         with open(pipeline_config_file, "r") as f:
             pipeline_config = yaml.safe_load(f)
-            print(pipeline_config)
     else:
         raise Exception("Pipeline config file must be json or yaml file")
     with open(f"./saagie/envs/{env}.json", "r") as f:
