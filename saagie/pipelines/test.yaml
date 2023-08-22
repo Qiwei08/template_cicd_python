@@ -1,4 +1,4 @@
-pipeline_name: Pipeline with yaml file
+pipeline_name: Pipeline with yaml file 1
 env:
   dev:
     graph_pipeline:
