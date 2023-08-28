@@ -41,7 +41,7 @@ env:
           value: AllSuccessOrSkipped
           next_nodes_success:
             - 6c4bd80a-1e4a-444c-bdf3-3ddb58443a7b
-          next_nodes_failure:
+#          next_nodes_failure:
 #            - 56033b84-3679-4aa9-ab1b-99042cf38668
         - id: f3729b1b-e5bd-4482-a1a5-dda5bdcfef98
           condition_type: expression
@@ -91,7 +91,7 @@ env:
           value: AllSuccessOrSkipped
           next_nodes_success:
             - 6c4bd80a-1e4a-444c-bdf3-3ddb58443a7b
-          next_nodes_failure:
+#          next_nodes_failure:
 #            - 56033b84-3679-4aa9-ab1b-99042cf38668
         - id: f3729b1b-e5bd-4482-a1a5-dda5bdcfef98
           condition_type: expression
