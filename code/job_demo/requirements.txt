@@ -1,0 +1,7 @@
+s3fs
+transformers==4.16.2
+datasets==1.18.4
+torch==1.7.1
+fastprogress==1.0.0
+torchvision==0.8.2
+mlflow==1.20
