@@ -27,10 +27,10 @@ env:
           job_name: 5 Inference handler
           job_id: 12abe0d3-398b-4bd3-9635-128620047902
           next_nodes: []
-        - id: 56033b84-3679-4aa9-ab1b-99042cf38668
-          job_name: Error handling
-          job_id: 0510cb33-09cf-417d-90ac-d357b5628481
-          next_nodes: []
+#        - id: 56033b84-3679-4aa9-ab1b-99042cf38668
+#          job_name: Error handling
+#          job_id: 0510cb33-09cf-417d-90ac-d357b5628481
+#          next_nodes: []
         - id: 77808dcb-39c2-4cca-8db7-5476e06b0a95
           job_name: Error handling
           job_id: 0510cb33-09cf-417d-90ac-d357b5628481
@@ -42,7 +42,7 @@ env:
           next_nodes_success:
             - 6c4bd80a-1e4a-444c-bdf3-3ddb58443a7b
           next_nodes_failure:
-            - 56033b84-3679-4aa9-ab1b-99042cf38668
+#            - 56033b84-3679-4aa9-ab1b-99042cf38668
         - id: f3729b1b-e5bd-4482-a1a5-dda5bdcfef98
           condition_type: expression
           value: 1 + 1 == 2
