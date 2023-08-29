@@ -41,7 +41,7 @@ def main():
 
     if args.action == "package_job":
         if job_config["file_path"]:
-            utils.package_code(f"./dist/{job_config['job_name']}", f"./code/{args.job_name}")
+            utils.package_code(f"./dist/{job_config['job_name']}", f"./code/jobs/{args.job_name}")
             logging.info(f"Successfully package job: [{args.job_name}]")
         else:
             logging.info(f"There is no corresponding artefact path for the job: [{args.job_name}]")
