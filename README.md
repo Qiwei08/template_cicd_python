@@ -22,49 +22,22 @@ we don't need to create a zip for bash job.
 - You have to create at least one project in Saagie Platform (in the example, we have one in `dev`,
   another in `prod`)
 - git clone this repo
-- If you have only one environment in Saagie, you can remove the `dev` directory inside `saagie/envs/`
-- Then, Change `project_id` value inside the json file at `/saagie/envs/prod.json`
-- Change also `project_name` value inside the json file at `/saagie/envs/prod.json`
+- Create the following environment variables:
+  * SAAGIE_URL
+  * SAAGIE_USER
+  * SAAGIE_PWD
+  * SAAGIE_REALM
+- If you have only one environment in Saagie, you can remove the `dev` directory inside `saagie/envs/`, and you create 
+a json file with your environment name: `your_env_name.json`
+- In your `saagie/envs/your_env_name.json`, you have to specify 3 key values:
+  - `platform_id`
+  - `project_id`
+  - `project_name`
+
 
 ### Local prerequisite
 
-- Install Python and all libraries in `requirements.txt`
-- To make it easier when launching command line, you can create the following environment variables:
-  * SAAGIE_URL
-  * SAAGIE_LOGIN
-  * SAAGIE_PWD
-  * SAAGIE_REALM
-
-## How to use it in local
-
-- To package a job, you can run the following command by replacing `your_job_name` by the  job that you want to package: `python __main__.py --action package_job --job_name your_job_name`
-- To update a job,
-  * For windows user, use the following command line by replacing `your_job_name` and `dev` if you want to use another environment:
-    `python __main__.py --action update_job --job_name your_job_name --saagie_url %SAAGIE_URL% --saagie_user %SAAGIE_LOGIN% --saagie_pwd %SAAGIE_PWD% --saagie_realm %SAAGIE_REALM% --saagie_env dev`
-
-  * For Linux user, use the following command line by replacing `your_job_name` and `dev` if you want to use another environment:
-    `python __main__.py --action update_job --job_name your_job_name --saagie_url $SAAGIE_URL --saagie_user $SAAGIE_LOGIN --saagie_pwd $SAAGIE_PWD --saagie_realm $SAAGIE_REALM --saagie_env dev`
-
-- To run a job, same thing as update, by using `--action run`,
-  * For windows user, use the following command line by replacing `your_job_name` and `dev` if you want to use another environment:
-    `python __main__.py --action run_job --job_name your_job_name --saagie_url %SAAGIE_URL% --saagie_user %SAAGIE_LOGIN% --saagie_pwd %SAAGIE_PWD% --saagie_realm %SAAGIE_REALM% --saagie_env dev`
-
-  * For Linux user, use the following command line by replacing `your_job_name` and `dev` if you want to use another environment:
-    `python __main__.py --action run_job --job_name your_job_name --saagie_url $SAAGIE_URL --saagie_user $SAAGIE_LOGIN --saagie_pwd $SAAGIE_PWD --saagie_realm $SAAGIE_REALM --saagie_env dev`
-
-- To update a pipeline,
-  * For windows user, use the following command line by replacing `your_pipeline_name` and `dev` if you want to use another environment:
-    `python __main__.py --action update_pipeline --pipeline_name your_pipeline_name --saagie_url %SAAGIE_URL% --saagie_user %SAAGIE_LOGIN% --saagie_pwd %SAAGIE_PWD% --saagie_realm %SAAGIE_REALM% --saagie_env dev`
-
-  * For Linux user, use the following command line by replacing `your_job_name` and `dev` if you want to use another environment:
-    `python __main__.py --action update_pipeline --pipeline_name your_pipeline_name --saagie_url $SAAGIE_URL --saagie_user $SAAGIE_LOGIN --saagie_pwd $SAAGIE_PWD --saagie_realm $SAAGIE_REALM --saagie_env dev`
-
-- To run a pipeline,
-  * For windows user, use the following command line by replacing `your_pipeline_name` and `dev` if you want to use another environment:
-    `python __main__.py --action run_pipeline --pipeline_name your_pipeline_name --saagie_url %SAAGIE_URL% --saagie_user %SAAGIE_LOGIN% --saagie_pwd %SAAGIE_PWD% --saagie_realm %SAAGIE_REALM% --saagie_env dev`
-
-  * For Linux user, use the following command line by replacing `your_job_name` and `dev` if you want to use another environment:
-    `python __main__.py --action run_pipeline --pipeline_name your_pipeline_name --saagie_url $SAAGIE_URL --saagie_user $SAAGIE_LOGIN --saagie_pwd $SAAGIE_PWD --saagie_realm $SAAGIE_REALM --saagie_env dev`
+- Install Python (at least 3.8) and all libraries in `requirements.txt`
 
 
 ## Configuration
@@ -82,8 +55,47 @@ In this repository, we have 2 directories:
   - `pipelines`:
     - each json file is a configuration file for a pipeline
 
-You can also modify github workflows. For now, each push on a branch will trigger a check to see which ones
-have been modified. Based on this, it will trigger actions such as updating a job, or updating a pipeline.
+You can also modify github workflows. For now, each push on a branch will trigger a check to see which configuration files have
+been modified. Based on this, it will trigger actions such as updating a job, or updating a pipeline.
+
+
+
+
+
+
+
+
+## How to use it in local
+
+- To package a job, you can run the following command by replacing `your_job_name` by the job that you want to package: `python __main__.py --action package_job --job_name your_job_name`.
+It suppose that your job code is in `code/your_job_name`
+- To update a job,
+  * For windows user, use the following command line by replacing `your_job_name` and `dev` if you want to use another environment:
+    `python __main__.py --action update_job --job_name your_job_name --saagie_url %SAAGIE_URL% --saagie_user %SAAGIE_USER% --saagie_pwd %SAAGIE_PWD% --saagie_realm %SAAGIE_REALM% --saagie_env your_env_name`
+
+  * For Linux user, use the following command line by replacing `your_job_name` and `dev` if you want to use another environment:
+    `python __main__.py --action update_job --job_name your_job_name --saagie_url $SAAGIE_URL --saagie_user $SAAGIE_USER --saagie_pwd $SAAGIE_PWD --saagie_realm $SAAGIE_REALM --saagie_env your_env_name`
+
+- To run a job, same thing as update, by using `--action run`,
+  * For windows user, use the following command line by replacing `your_job_name` and `dev` if you want to use another environment:
+    `python __main__.py --action run_job --job_name your_job_name --saagie_url %SAAGIE_URL% --saagie_user %SAAGIE_USER% --saagie_pwd %SAAGIE_PWD% --saagie_realm %SAAGIE_REALM% --saagie_env your_env_name`
+
+  * For Linux user, use the following command line by replacing `your_job_name` and `dev` if you want to use another environment:
+    `python __main__.py --action run_job --job_name your_job_name --saagie_url $SAAGIE_URL --saagie_user $SAAGIE_USER --saagie_pwd $SAAGIE_PWD --saagie_realm $SAAGIE_REALM --saagie_env your_env_name`
+
+- To update a pipeline,
+  * For windows user, use the following command line by replacing `your_pipeline_name` and `dev` if you want to use another environment:
+    `python __main__.py --action update_pipeline --pipeline_name your_pipeline_name --saagie_url %SAAGIE_URL% --saagie_user %SAAGIE_USER% --saagie_pwd %SAAGIE_PWD% --saagie_realm %SAAGIE_REALM% --saagie_env your_env_name`
+
+  * For Linux user, use the following command line by replacing `your_job_name` and `dev` if you want to use another environment:
+    `python __main__.py --action update_pipeline --pipeline_name your_pipeline_name --saagie_url $SAAGIE_URL --saagie_user $SAAGIE_USER --saagie_pwd $SAAGIE_PWD --saagie_realm $SAAGIE_REALM --saagie_env your_env_name`
+
+- To run a pipeline,
+  * For windows user, use the following command line by replacing `your_pipeline_name` and `dev` if you want to use another environment:
+    `python __main__.py --action run_pipeline --pipeline_name your_pipeline_name --saagie_url %SAAGIE_URL% --saagie_user %SAAGIE_USER% --saagie_pwd %SAAGIE_PWD% --saagie_realm %SAAGIE_REALM% --saagie_env your_env_name`
+
+  * For Linux user, use the following command line by replacing `your_job_name` and `dev` if you want to use another environment:
+    `python __main__.py --action run_pipeline --pipeline_name your_pipeline_name --saagie_url $SAAGIE_URL --saagie_user $SAAGIE_USER --saagie_pwd $SAAGIE_PWD --saagie_realm $SAAGIE_REALM --saagie_env your_env_name`
 
 
 ### Environment configuration file
@@ -110,8 +122,6 @@ Type: `object`
   - _Name of the Saagie project_
   - Type: `string`
   - Example: `"My project"`
-
-
 
 
 ### Job configuration file
@@ -171,14 +181,23 @@ Type: `object`
 
 #### Pipeline
 
-Each file inside `/saagie/pipelines` has following schema, it can be json or yaml:
+Each file inside `/saagie/pipelines` has following schema:
 
 _A pipeline inside Saagie_
 
 Type: `object`
 
 **_Properties_**
+- **_file_path_** `required`
+  - _The path of pipeline artefact_
+  - Type: `string`
 
+A pipeline artefact have the following schema, it can be a json or yaml file.
+
+_A pipeline inside Saagie_
+Type: `object`
+
+**_Properties_**
 - **_env_** `required`
   - _Dict that contains all environment where you want to deploy job_
   - Type: `object`

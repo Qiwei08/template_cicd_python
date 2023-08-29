@@ -155,31 +155,33 @@ def create_or_upgrade_graph_pipeline(client_saagie, pipeline_config_file, env):
     :param env: str, environment of Saagie that you want upgrade pipeline
     :return: dict of pipeline information
     """
-    _, file_extension = os.path.splitext(pipeline_config_file)
+    with open(pipeline_config_file, "r") as f:
+        pipeline_config = json.load(f)
+    _, file_extension = os.path.splitext(pipeline_config["file_path"])
     if file_extension == ".json":
-        with open(pipeline_config_file, "r") as f:
-            pipeline_config = json.load(f)
-    elif file_extension == ".yaml":
-        with open(pipeline_config_file, "r") as f:
-            pipeline_config = yaml.safe_load(f)
+        with open(pipeline_config["file_path"], "r") as f:
+            pipeline_info = json.load(f)
+    elif file_extension == ".yaml" or file_extension == ".yml":
+        with open(pipeline_config["file_path"], "r") as f:
+            pipeline_info = yaml.safe_load(f)
     else:
         raise Exception("Pipeline config file must be json or yaml file")
     with open(f"./saagie/envs/{env}.json", "r") as f:
         env_config = json.load(f)
 
-    graph_pipeline = create_graph(pipeline_config_file, env)
+    graph_pipeline = create_graph(pipeline_config["file_path"], env)
     release_note = "WIP"
     if "CI" in os.environ:
         release_note = f"{os.environ['CI_COMMIT_MESSAGE']} - {os.environ['GITHUB_SERVER_URL']}/{os.environ['GITHUB_REPOSITORY']}/commit/{os.environ['GITHUB_SHA']}"
 
     res = client_saagie.pipelines.create_or_upgrade(
-        name=pipeline_config["pipeline_name"],
+        name=pipeline_info["pipeline_name"],
         project_id=env_config["project_id"],
         graph_pipeline=graph_pipeline,
         release_note=release_note,
-        description=pipeline_config["description"] if "description" in pipeline_config  and bool(pipeline_config["description"])else None,
-        has_execution_variables_enabled=pipeline_config["has_execution_variables_enabled"] if
-        "has_execution_variables_enabled" in pipeline_config and bool(pipeline_config["has_execution_variables_enabled"]) else None,
+        description=pipeline_info["description"] if "description" in pipeline_info and bool(pipeline_info["description"])else None,
+        has_execution_variables_enabled=pipeline_info["has_execution_variables_enabled"] if
+        "has_execution_variables_enabled" in pipeline_info and bool(pipeline_info["has_execution_variables_enabled"]) else None,
     )
     return res
 
@@ -192,17 +194,19 @@ def run_pipeline(client_saagie, pipeline_config_file, env):
     :param env: str, environment of Saagie that you want to create or upgrade job
     :return: dict, dict of job instance ID and status
     """
-    _, file_extension = os.path.splitext(pipeline_config_file)
+    with open(pipeline_config_file, "r") as f:
+        pipeline_config = json.load(f)
+    _, file_extension = os.path.splitext(pipeline_config["file_path"])
     if file_extension == ".json":
-        with open(pipeline_config_file, "r") as f:
-            pipeline_config = json.load(f)
-    elif file_extension == ".yaml":
-        with open(pipeline_config_file, "r") as f:
-            pipeline_config = yaml.safe_load(f)
+        with open(pipeline_config["file_path"], "r") as f:
+            pipeline_info = json.load(f)
+    elif file_extension == ".yaml" or file_extension == ".yml":
+        with open(pipeline_config["file_path"], "r") as f:
+            pipeline_info = yaml.safe_load(f)
     else:
         raise Exception("Pipeline config file must be json or yaml file")
     with open(f"./saagie/envs/{env}.json", "r") as f:
         env_config = json.load(f)
-    pipeline_id = client_saagie.pipelines.get_id(project_name=env_config["project_name"], pipeline_name=pipeline_config["pipeline_name"])
+    pipeline_id = client_saagie.pipelines.get_id(project_name=env_config["project_name"], pipeline_name=pipeline_info["pipeline_name"])
     logging.info("Pipeline ID: " + pipeline_id)
     return client_saagie.pipelines.run(pipeline_id)
