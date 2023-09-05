@@ -28,8 +28,13 @@ def main():
                         help="Saagie_realm", required=False)
     parser.add_argument("--saagie_env", type=str,
                         help="Saagie environment", required=False, default="dev")
+    parser.add_argument("--debug", help="Enable debug mode", action="store_const",
+                        dest="loglevel", const=logging.DEBUG, default=logging.INFO)
 
     args = parser.parse_args()
+
+    logging.basicConfig(level=args.loglevel, format="%(asctime)s - [%(levelname)s] - %(message)s",
+                        datefmt="%Y-%m-%d %H:%M:%S")
     # Retrieving environment config
     with open(f"saagie/envs/{args.saagie_env}.json", "r") as f:
         env_config = json.load(f)
@@ -85,6 +90,4 @@ def main():
 
 
 if __name__ == "__main__":
-    logging.basicConfig(level=logging.INFO, format="%(asctime)s - [%(levelname)s] - %(message)s",
-                        datefmt="%Y-%m-%d %H:%M:%S")
     main()

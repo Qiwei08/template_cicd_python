@@ -5,6 +5,13 @@ import json
 import shutil
 import os
 import yaml
+from pathlib import Path
+
+
+def handle_log_error(msg, exception):
+    logging.warning(msg)
+    logging.error("Something went wrong %s", exception)
+    raise exception
 
 
 def package_code(name_file, root_dir, archive_format="zip"):
@@ -31,6 +38,7 @@ def connect_to_saagie(url, id_platform, user, password, realm):
     :param realm: string, Saagie realm
     :return: instance of SaagieAPI
     """
+    logging.debug(f"Connecting to Saagie ...")
     saagie_client = SaagieApi(url_saagie=url,
                               id_platform=id_platform,
                               user=user,
@@ -48,10 +56,18 @@ def create_or_upgrade_job(client_saagie, job_config_file, env):
     :param env: str, environment of Saagie that you want to create or upgrade job
     :return: dict, dict of job informaiton
     """
-    with open(job_config_file, "r") as f:
-        job_config = json.load(f)
-    with open(f"./saagie/envs/{env}.json", "r") as f:
-        env_config = json.load(f)
+    try:
+        logging.debug(f"Loading job config file: [{job_config_file}] ...")
+        with open(job_config_file, "r") as f:
+            job_config = json.load(f)
+    except Exception as e:
+        return handle_log_error(f"Error when loading job config file: [{job_config_file}]", e)
+    try:
+        logging.debug(f"Loading env config file: [./saagie/envs/{env}.json] ...")
+        with open(f"./saagie/envs/{env}.json", "r") as f:
+            env_config = json.load(f)
+    except Exception as e:
+        return handle_log_error(f"Error when loading env config file: [./saagie/envs/{env}.json]", e)
 
     release_note = "WIP"
     if "CI" in os.environ:
@@ -82,12 +98,22 @@ def run_job(client_saagie, job_config_file, env):
     :param env: str, environment of Saagie that you want to create or upgrade job
     :return: dict, dict of job instance ID and status
     """
-    with open(job_config_file, "r") as f:
-        job_config = json.load(f)
-    with open(f"./saagie/envs/{env}.json", "r") as f:
-        env_config = json.load(f)
+    try:
+        logging.debug(f"Loading job config file: [{job_config_file}] ...")
+        with open(job_config_file, "r") as f:
+            job_config = json.load(f)
+    except Exception as e:
+        return handle_log_error(f"Error when loading job config file: [{job_config_file}]", e)
+    try:
+        logging.debug(f"Loading env config file: [./saagie/envs/{env}.json] ...")
+        with open(f"./saagie/envs/{env}.json", "r") as f:
+            env_config = json.load(f)
+    except Exception as e:
+        return handle_log_error(f"Error when loading env config file: [./saagie/envs/{env}.json]", e)
+    logging.debug(f"Getting job ID: [{job_config['job_name']}] ...")
     job_id = client_saagie.jobs.get_id(job_config["job_name"], env_config["project_name"])
     logging.info("Job ID: " + job_id)
+    logging.debug(f"Running job: [{job_id}] ...")
     return client_saagie.jobs.run(job_id)
 
 
@@ -98,21 +124,24 @@ def create_graph(pipeline_config_file, env):
     :param env: str, environment of Saagie that you want upgrade pipeline
     :return: saagieapi.GraphPipeline
     """
-    _, file_extension = os.path.splitext(pipeline_config_file)
+    file_extension = Path(pipeline_config_file).suffix
+    logging.debug(f"Loading pipeline config file: [{pipeline_config_file}] ...")
     if file_extension == ".json":
         with open(pipeline_config_file, "r") as f:
             pipeline_config = json.load(f)
-    elif file_extension == ".yaml":
+    elif file_extension == ".yaml" or file_extension == ".yml":
         with open(pipeline_config_file, "r") as f:
             pipeline_config = yaml.safe_load(f)
     else:
-        raise Exception("Pipeline config file must be a json or yaml file")
+        raise Exception("Pipeline artefact file must be a json or yaml file")
 
     pipeline_info = pipeline_config["env"][env]["graph_pipeline"]
     graph_pipeline = GraphPipeline()
     list_job_nodes = []
     list_condition_nodes = []
 
+    logging.debug("Creating graph pipeline ...")
+    logging.debug("Creating job nodes ...")
     # Find all job nodes
     for i in range(len(pipeline_info["job_nodes"])):
         job_node_info = pipeline_info["job_nodes"][i]
@@ -124,6 +153,7 @@ def create_graph(pipeline_config_file, env):
         }
         list_job_nodes.append(node_dict)
 
+    logging.debug("Creating condition nodes ...")
     # Find all condition nodes
     for i in range(len(pipeline_info["condition_nodes"])):
         condition_node_info = pipeline_info["condition_nodes"][i]
@@ -155,9 +185,13 @@ def create_or_upgrade_graph_pipeline(client_saagie, pipeline_config_file, env):
     :param env: str, environment of Saagie that you want upgrade pipeline
     :return: dict of pipeline information
     """
-    with open(pipeline_config_file, "r") as f:
-        pipeline_config = json.load(f)
-    _, file_extension = os.path.splitext(pipeline_config["file_path"])
+    try:
+        with open(pipeline_config_file, "r") as f:
+            pipeline_config = json.load(f)
+    except Exception as e:
+        return handle_log_error(f"Error when loading pipeline config file: [{pipeline_config_file}]", e)
+
+    file_extension = Path(pipeline_config["file_path"]).suffix
     if file_extension == ".json":
         with open(pipeline_config["file_path"], "r") as f:
             pipeline_info = json.load(f)
@@ -165,7 +199,7 @@ def create_or_upgrade_graph_pipeline(client_saagie, pipeline_config_file, env):
         with open(pipeline_config["file_path"], "r") as f:
             pipeline_info = yaml.safe_load(f)
     else:
-        raise Exception("Pipeline config file must be json or yaml file")
+        raise Exception("Pipeline artefact file must be json or yaml file")
     with open(f"./saagie/envs/{env}.json", "r") as f:
         env_config = json.load(f)
 
@@ -194,9 +228,13 @@ def run_pipeline(client_saagie, pipeline_config_file, env):
     :param env: str, environment of Saagie that you want to create or upgrade job
     :return: dict, dict of job instance ID and status
     """
-    with open(pipeline_config_file, "r") as f:
-        pipeline_config = json.load(f)
-    _, file_extension = os.path.splitext(pipeline_config["file_path"])
+    try:
+        with open(pipeline_config_file, "r") as f:
+            pipeline_config = json.load(f)
+    except Exception as e:
+        return handle_log_error(f"Error when loading pipeline config file: [{pipeline_config_file}]", e)
+
+    file_extension = Path(pipeline_config["file_path"]).suffix
     if file_extension == ".json":
         with open(pipeline_config["file_path"], "r") as f:
             pipeline_info = json.load(f)
@@ -205,8 +243,12 @@ def run_pipeline(client_saagie, pipeline_config_file, env):
             pipeline_info = yaml.safe_load(f)
     else:
         raise Exception("Pipeline config file must be json or yaml file")
+
+    logging.debug(f"Loading environment config file: ./saagie/envs/{env}.json")
     with open(f"./saagie/envs/{env}.json", "r") as f:
         env_config = json.load(f)
+    logging.debug(f"Getting pipeline ID of {pipeline_info['pipeline_name']} ...")
     pipeline_id = client_saagie.pipelines.get_id(project_name=env_config["project_name"], pipeline_name=pipeline_info["pipeline_name"])
     logging.info("Pipeline ID: " + pipeline_id)
+    logging.debug(f"Running pipeline: [{pipeline_id}]...")
     return client_saagie.pipelines.run(pipeline_id)
