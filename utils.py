@@ -58,13 +58,13 @@ def create_or_upgrade_job(client_saagie, job_config_file, env):
     """
     try:
         logging.debug(f"Loading job config file: [{job_config_file}] ...")
-        with open(job_config_file, "r") as f:
+        with open(job_config_file, "r", encoding="utf8") as f:
             job_config = json.load(f)
     except Exception as e:
         return handle_log_error(f"Error when loading job config file: [{job_config_file}]", e)
     try:
         logging.debug(f"Loading env config file: [./saagie/envs/{env}.json] ...")
-        with open(f"./saagie/envs/{env}.json", "r") as f:
+        with open(f"./saagie/envs/{env}.json", "r", encoding="utf8") as f:
             env_config = json.load(f)
     except Exception as e:
         return handle_log_error(f"Error when loading env config file: [./saagie/envs/{env}.json]", e)
@@ -127,10 +127,10 @@ def create_graph(pipeline_config_file, env):
     file_extension = Path(pipeline_config_file).suffix
     logging.debug(f"Loading pipeline config file: [{pipeline_config_file}] ...")
     if file_extension == ".json":
-        with open(pipeline_config_file, "r") as f:
+        with open(pipeline_config_file, "r", encoding="utf8") as f:
             pipeline_config = json.load(f)
     elif file_extension == ".yaml" or file_extension == ".yml":
-        with open(pipeline_config_file, "r") as f:
+        with open(pipeline_config_file, "r", encoding="utf8") as f:
             pipeline_config = yaml.safe_load(f)
     else:
         raise Exception("Pipeline artefact file must be a json or yaml file")
@@ -186,17 +186,17 @@ def create_or_upgrade_graph_pipeline(client_saagie, pipeline_config_file, env):
     :return: dict of pipeline information
     """
     try:
-        with open(pipeline_config_file, "r") as f:
+        with open(pipeline_config_file, "r", encoding="utf8") as f:
             pipeline_config = json.load(f)
     except Exception as e:
         return handle_log_error(f"Error when loading pipeline config file: [{pipeline_config_file}]", e)
 
     file_extension = Path(pipeline_config["file_path"]).suffix
     if file_extension == ".json":
-        with open(pipeline_config["file_path"], "r") as f:
+        with open(pipeline_config["file_path"], "r", encoding="utf8") as f:
             pipeline_info = json.load(f)
     elif file_extension == ".yaml" or file_extension == ".yml":
-        with open(pipeline_config["file_path"], "r") as f:
+        with open(pipeline_config["file_path"], "r", encoding="utf8") as f:
             pipeline_info = yaml.safe_load(f)
     else:
         raise Exception("Pipeline artefact file must be json or yaml file")
