@@ -71,24 +71,30 @@ def create_or_upgrade_job(client_saagie, job_config_file, env):
 
     release_note = "WIP"
     if "CI" in os.environ:
-        release_note = f"{os.environ['CI_COMMIT_MESSAGE']} - {os.environ['GITHUB_SERVER_URL']}/{os.environ['GITHUB_REPOSITORY']}/commit/{os.environ['GITHUB_SHA']}"
+        if "GITHUB_SERVER_URL" in os.environ:
+            release_note = f"{os.environ['CI_COMMIT_MESSAGE']} - {os.environ['GITHUB_SERVER_URL']}/{os.environ['GITHUB_REPOSITORY']}/commit/{os.environ['GITHUB_SHA']}"
+        else:
+            release_note = f"{os.environ['CI_COMMIT_MESSAGE']} - {os.environ['CI_PROJECT_URL']}/-/commit/{os.environ['CI_COMMIT_SHA']}"
 
     res = client_saagie.jobs.create_or_upgrade(
         job_name=job_config["job_name"],
         project_id=env_config["project_id"],
         file=job_config["file_path"] if "file_path" in job_config and bool(job_config["file_path"]) else None,
-        description=job_config["description"] if "description" in job_config else "",
-        category=job_config["category"] if "category" in job_config else "",
-        technology=job_config["technology"] if "technology" in job_config else "",
-        technology_catalog=job_config["technology_catalog"] if "technology_catalog" in job_config else "",
+        use_previous_artifact=False,
+        description=job_config["description"] if "description" in job_config else None,
+        category=job_config["category"] if "category" in job_config else None,
+        technology=job_config["technology"] if "technology" in job_config else None,
+        technology_catalog=job_config["technology_catalog"] if "technology_catalog" in job_config else None,
         runtime_version=job_config["runtime_version"] if "runtime_version" in job_config and bool(job_config["runtime_version"]) else None,
         command_line=job_config["command_line"] if "command_line" in job_config and bool(job_config["command_line"]) else None,
         release_note=release_note,
-        extra_technology=job_config["extra_technology"] if "extra_technology" in job_config else None,
-        extra_technology_version=job_config["extra_technology_version"] if "extra_technology_version" in job_config else None
+        extra_technology=job_config["extra_technology"] if "extra_technology" in job_config and bool(
+            job_config["extra_technology"]) else None,
+        extra_technology_version=job_config[
+            "extra_technology_version"] if "extra_technology_version" in job_config and bool(
+            job_config["extra_technology_version"]) else None
     )
     return res
-
 
 def run_job(client_saagie, job_config_file, env):
     """
